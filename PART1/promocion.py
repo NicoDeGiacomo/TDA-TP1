@@ -57,7 +57,6 @@ def get_total_value(state):
     return sum([influencer.penetration for influencer in state])
 
 
-# TODO: Esto está en O(n2) pero se puede hacer en O(n)
 def limit_function(state):
     for influencer1 in state.selected:
         for influencer2 in state.selected:
