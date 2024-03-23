@@ -47,6 +47,7 @@ def parse_influencer(line):
     return Influencer(int(line[0]), line[1], int(line[2]), [int(i) for i in line[3:]])
 
 
+# TODO: Esto está en O(n2) pero se puede hacer en O(n)
 def cost_function(selected, new_influencer, total_influencers):
     max_influencers = len(total_influencers)
     return sum([influencer.penetration for influencer in selected]) + new_influencer.penetration * (
