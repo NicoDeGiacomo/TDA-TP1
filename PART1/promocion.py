@@ -20,11 +20,11 @@ class State:
         return self.cost >= other.cost
 
 
-def get_total_value(selected: list[Influencer]):
+def get_total_value(selected: list[Influencer]) -> int:
     return sum(influencer.penetration for influencer in selected)
 
 
-def cost_function(selected_influencers, new_influencer, total_influencers):
+def cost_function(selected_influencers, new_influencer, total_influencers) -> int:
     return sum(influencer.penetration for influencer in selected_influencers) + new_influencer.penetration * (
             len(total_influencers) - len(selected_influencers))
 
@@ -38,7 +38,7 @@ def generate_next_states(available_states: queue.PriorityQueue, current_state: S
             available_states.put(new_state)
 
 
-def limit_function(state: State):
+def limit_function(state: State) -> bool:
     avoid = set()
     for influencer in state.selected:
         avoid.update(influencer.avoid)
@@ -49,14 +49,14 @@ def limit_function(state: State):
     return True
 
 
-def parse_influencer(line: list[str]):
+def parse_influencer(line: list[str]) -> Influencer:
     return Influencer(int(line[0]), line[1], int(line[2]), [int(i) for i in line[3:]])
 
 
-def read_influencers(file_name: str):
+def read_influencers(file_name: str) -> list[Influencer]:
     influencers = []
     with open(file_name) as file:
-        for line in file.readlines():
+        for line in file:
             influencers.append(parse_influencer(line.split(",")))
     return influencers
 
