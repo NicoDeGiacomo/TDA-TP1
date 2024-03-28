@@ -1,3 +1,6 @@
+import queue
+
+
 class Influencer:
     def __init__(self, id, name, penetration, avoid):
         self.id = id
@@ -12,6 +15,9 @@ class State:
         self.selected = selected
         self.cost = 0
 
+    def __lt__(self, other):
+        return self.cost >= other.cost
+
 
 def main():
     influencers = []
@@ -20,18 +26,20 @@ def main():
             influencers.append(parse_influencer(line.split(",")))
 
     initial_state = State([])
-    available_states = [initial_state]
+    available_states = queue.PriorityQueue()
+    available_states.put(initial_state)
 
     best_solution = initial_state
-    while available_states:
-        available_states.sort(key=lambda x: x.cost)
-        current_state = available_states.pop()
+    while not available_states.empty():
+        current_state = available_states.get()
 
         if limit_function(current_state):
             if current_state.value > best_solution.value:
+                # print("Best solution: ", current_state.value, [influencer.id for influencer in current_state.selected])
                 best_solution = current_state
 
-        available_states.extend(get_next_states(current_state, influencers))
+        for state in get_next_states(current_state, influencers):
+            available_states.put(state)
 
     print(best_solution.value, [influencer.id for influencer in best_solution.selected])
 
