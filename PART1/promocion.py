@@ -1,16 +1,17 @@
+import sys
 import queue
 
 
 class Influencer:
-    def __init__(self, id, name, penetration, avoid):
-        self.id = id
+    def __init__(self, influencer_id: int, name: str, penetration: int, avoid: list[int]):
+        self.id = influencer_id
         self.name = name
         self.penetration = penetration
         self.avoid = avoid
 
 
 class State:
-    def __init__(self, selected):
+    def __init__(self, selected: list[Influencer]):
         self.value = get_total_value(selected)
         self.selected = selected
         self.cost = 0
@@ -19,77 +20,75 @@ class State:
         return self.cost >= other.cost
 
 
-def main():
+def get_total_value(selected: list[Influencer]):
+    return sum(influencer.penetration for influencer in selected)
+
+
+def cost_function(selected_influencers, new_influencer, total_influencers):
+    return sum(influencer.penetration for influencer in selected_influencers) + new_influencer.penetration * (
+            len(total_influencers) - len(selected_influencers))
+
+
+def generate_next_states(available_states: queue.PriorityQueue, current_state: State, influencers: list[Influencer]):
+    for influencer in influencers:
+        if influencer not in current_state.selected:
+            new_state = State(current_state.selected + [influencer])
+            new_state.cost = cost_function(current_state.selected, influencer, influencers)
+
+            available_states.put(new_state)
+
+
+def limit_function(state: State):
+    avoid = set()
+    for influencer in state.selected:
+        avoid.update(influencer.avoid)
+
+    for influencer in state.selected:
+        if influencer.id in avoid:
+            return False
+    return True
+
+
+def parse_influencer(line: list[str]):
+    return Influencer(int(line[0]), line[1], int(line[2]), [int(i) for i in line[3:]])
+
+
+def read_influencers(file_name: str):
     influencers = []
-    with open('influencers.txt') as file:
+    with open(file_name) as file:
         for line in file.readlines():
             influencers.append(parse_influencer(line.split(",")))
+    return influencers
+
+
+def print_result(best_solution: State):
+    print("Valor conseguido:", best_solution.value)
+    print()
+    print(*(influencer.name for influencer in best_solution.selected), sep='\n')
+
+
+def main(file_name: str):
+    influencers = read_influencers(file_name)
 
     initial_state = State([])
     available_states = queue.PriorityQueue()
     available_states.put(initial_state)
-
     best_solution = initial_state
+
     while not available_states.empty():
         current_state = available_states.get()
 
         if limit_function(current_state):
             if current_state.value > best_solution.value:
-                # print("Best solution: ", current_state.value, [influencer.id for influencer in current_state.selected])
                 best_solution = current_state
 
-        for state in get_next_states(current_state, influencers):
-            available_states.put(state)
+        generate_next_states(available_states, current_state, influencers)
 
-    print(best_solution.value, [influencer.id for influencer in best_solution.selected])
-
-
-def is_valid(influencer, selected):
-    for code in selected:
-        if code in influencer.avoid:
-            return False
-    return True
+    print_result(best_solution)
 
 
-def parse_influencer(line):
-    return Influencer(int(line[0]), line[1], int(line[2]), [int(i) for i in line[3:]])
-
-
-# TODO: Esto está en O(n2) pero se puede hacer en O(n)
-def cost_function(selected, new_influencer, total_influencers):
-    max_influencers = len(total_influencers)
-    return sum([influencer.penetration for influencer in selected]) + new_influencer.penetration * (
-            max_influencers - len(selected))
-
-
-def get_total_value(state):
-    return sum([influencer.penetration for influencer in state])
-
-
-def limit_function(state):
-    for influencer1 in state.selected:
-        for influencer2 in state.selected:
-            if influencer1.id in influencer2.avoid:
-                return False
-    return True
-
-
-def get_next_states(state, influencers):
-    next_states = []
-    for influencer in influencers:
-        if influencer not in state.selected:
-            new_state = State(state.selected + [influencer])
-            new_state.cost = cost_function(state.selected, influencer, influencers)
-            next_states.append(new_state)
-    return next_states
-
-
-if __name__ == '__main__':
-    main()
-
-# TODO: Imprimir bien el resultado
-# TODO: Calcular complejidad temporal y espacial
-# TODO: Dejar el codigo mas limpio
-# Algoritmo: Best-first search
-# Function costo (aproximacion): Suma de penetraciones de los influencers seleccionados + penetracion del influencer a agregar * (cantidad de influencers - cantidad de influencers seleccionados)
-# Funcion limite: No hay dos influencers que no puedan trabajar juntos
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: python promocion.py [file]")
+    else:
+        main(sys.argv[1])
