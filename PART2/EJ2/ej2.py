@@ -35,7 +35,7 @@ Se pide:
                                       |||      
                                       LMN 
 
-                                      
+
     1 BFS = A B C D E F G H I J K L M N
     2 INVERTIR = N M L K J I H G F E D C B A
     3 agarrar primero, revisar si es evitar: 
@@ -49,10 +49,10 @@ Se pide:
                             ---------A-----
                             |     |    |  |
                             B    -C-   D  E
-                                | |   |
-                                F G   H
-                                |
-                                I
+                                 | |   |
+                                 F G   H
+                                 |
+                                 I
     1 BFS = A B C D E F G H I 
     2 INVERTIR = I H G F E D C B A
     3 agarrar primero, revisar si es evitar: 
@@ -121,11 +121,43 @@ def armar_arbol_ejemplo1():
 
     return organigrama
 
+def armar_arbol_ejemplo2():
+    """
+    EJEMPLO ESTRUCTURA
+                            ---------A-----
+                            |     |    |  |
+                            B    -C-   D  E
+                                 | |   |
+                                 F G   H
+                                 |
+                                 I
+                                 
+    """
+    organigrama = Grafo(True,["A","B","C","D","E","F","G","H","I"]) #ARBOL DEBE SER DIRIGIDO EL GRAFO
+    organigrama.Agregar_Arista("A","B")
+    organigrama.Agregar_Arista("A","C")
+    organigrama.Agregar_Arista("A","D")
+    organigrama.Agregar_Arista("A","E")
+
+    organigrama.Agregar_Arista("C","F")
+    organigrama.Agregar_Arista("C","G")
+
+    organigrama.Agregar_Arista("D","H")
+
+    organigrama.Agregar_Arista("F","I")
+
+    return organigrama
+
     
 def main():
     
-    organigrama_laboral = armar_arbol_ejemplo1()
     jefe = "A"
-    print(obtener_maximos_invitados_trabajo_bfs(organigrama_laboral,jefe)) # {'J', 'L', 'M', 'H', 'N', 'I', 'F', 'G', 'D', 'E'} parece funcionar
+
+    organigrama_laboral_1 = armar_arbol_ejemplo1()
+    print(obtener_maximos_invitados_trabajo_bfs(organigrama_laboral_1,jefe)) # {'J', 'L', 'M', 'H', 'N', 'I', 'F', 'G', 'D', 'E'} parece funcionar
+
+    organigrama_laboral_2 = armar_arbol_ejemplo2()
+    print(obtener_maximos_invitados_trabajo_bfs(organigrama_laboral_2,jefe)) # {'B','I','G','H','E'} parece funcionar
+
 
 main()
