@@ -55,7 +55,7 @@ def get_random_color():
     return random.choice(foreground_colors), random.choice(background_colors)
 
 
-def recursive(matrix, fake_silo: Node, contains_silo):
+def recursive(matrix, fake_silo: Node):
 
     if (len(matrix) == 2):
         return  paint_hectares(matrix, fake_silo)
@@ -64,30 +64,29 @@ def recursive(matrix, fake_silo: Node, contains_silo):
     
     size = len(matrix)
     half_size = size // 2
+
+    quarter_with_silo = get_quarter_containing_silo(matrix, fake_silo)
     
-    if contains_silo:
-        quarter_with_silo = get_quarter_containing_silo(matrix, fake_silo)
-    
-    if contains_silo and quarter_with_silo == 0:
-        quarter1 = recursive(quarter1, fake_silo, contains_silo)
-        quarter2 = recursive(quarter2, Node(half_size - 1, 0), True)
-        quarter3 = recursive(quarter3, Node(0, half_size - 1), True)
-        quarter4 = recursive(quarter4, Node(0, 0), True)
-    elif contains_silo and quarter_with_silo == 1:
-        quarter1 = recursive(quarter1, Node(half_size - 1, half_size - 1), True)
-        quarter2 = recursive(quarter2, Node(fake_silo.coord_x, fake_silo.coord_y - half_size), contains_silo)
-        quarter3 = recursive(quarter3, Node(0, half_size - 1), True)
-        quarter4 = recursive(quarter4, Node(0, 0), True)
-    elif contains_silo and quarter_with_silo == 2:
-        quarter1 = recursive(quarter1, Node(half_size - 1, half_size - 1), True)
-        quarter2 = recursive(quarter2, Node(half_size - 1, 0), True)
-        quarter3 = recursive(quarter3, Node(fake_silo.coord_x - half_size, fake_silo.coord_y), contains_silo)
-        quarter4 = recursive(quarter4, Node(0, 0), True)
-    elif contains_silo and quarter_with_silo == 3:
-        quarter1 = recursive(quarter1, Node(half_size - 1, half_size - 1), True)
-        quarter2 = recursive(quarter2, Node(half_size - 1, 0), True)
-        quarter3 = recursive(quarter3, Node(0, half_size - 1), True)
-        quarter4 = recursive(quarter4, Node(fake_silo.coord_x - half_size, fake_silo.coord_y - half_size), contains_silo)
+    if quarter_with_silo == 0:
+        quarter1 = recursive(quarter1, fake_silo)
+        quarter2 = recursive(quarter2, Node(half_size - 1, 0))
+        quarter3 = recursive(quarter3, Node(0, half_size - 1))
+        quarter4 = recursive(quarter4, Node(0, 0))
+    elif quarter_with_silo == 1:
+        quarter1 = recursive(quarter1, Node(half_size - 1, half_size - 1))
+        quarter2 = recursive(quarter2, Node(fake_silo.coord_x, fake_silo.coord_y - half_size))
+        quarter3 = recursive(quarter3, Node(0, half_size - 1))
+        quarter4 = recursive(quarter4, Node(0, 0))
+    elif quarter_with_silo == 2:
+        quarter1 = recursive(quarter1, Node(half_size - 1, half_size - 1))
+        quarter2 = recursive(quarter2, Node(half_size - 1, 0))
+        quarter3 = recursive(quarter3, Node(fake_silo.coord_x - half_size, fake_silo.coord_y))
+        quarter4 = recursive(quarter4, Node(0, 0))
+    elif quarter_with_silo == 3:
+        quarter1 = recursive(quarter1, Node(half_size - 1, half_size - 1))
+        quarter2 = recursive(quarter2, Node(half_size - 1, 0))
+        quarter3 = recursive(quarter3, Node(0, half_size - 1))
+        quarter4 = recursive(quarter4, Node(fake_silo.coord_x - half_size, fake_silo.coord_y - half_size))
 
     full_matrix = []
     
@@ -125,8 +124,8 @@ def split_into_quarters(matrix):
 
 def main():
     n = 16
-    x_silo = 0
-    y_silo = 4
+    x_silo = 10
+    y_silo = 12
 
     if (not is_power_of_two(n) or n < 2):
         print("El valor de n ingresado debe ser potencia de 2 y mayor o igual a este.")
@@ -134,7 +133,7 @@ def main():
 
     field = [[0]*n for _ in range(n)]
     #field[x_silo][y_silo] = 'x '
-    field = recursive(field, Node(x_silo, y_silo), True)
+    field = recursive(field, Node(x_silo, y_silo))
     # highlight the main silo
     field[x_silo][y_silo] = "\033[93m11\033[0m"
     mostrar(field)
