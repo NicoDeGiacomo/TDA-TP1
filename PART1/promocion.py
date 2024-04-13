@@ -82,7 +82,7 @@ def main(file_name: str):
             if current_state.value > best_solution.value:
                 best_solution = current_state
 
-        generate_next_states(available_states, current_state, influencers)
+            generate_next_states(available_states, current_state, influencers)
 
     print_result(best_solution)
 
