@@ -52,7 +52,7 @@ inferior de invitados.
             N = evitar? NO ---> agrego INVITADOS = [ N ]
             evitar padre N---> K: EVITAR = [ K ]
             ....
-    4. Resultado = [ F G H  I J L M N E D ]
+    4. Resultado = [ N, M, L, J, I, H, G, F, D, E ]
 
     EJEMPLO 2:
                                     
@@ -68,18 +68,20 @@ inferior de invitados.
     3. Agarrar el primero, revisar si es evitar:
             ...
 
-    4. Resultado = [ I F H B E ]
+    4. Resultado = [ I, H, G, E, B ]
 
 
 Analisis de complejidad temporal
     - del Recorrido BFS tenemos O(V+E)
     - Como mejora no se invirtio la lista y se la recorrio de atras a adelante, el recorrido de la lista es O(V)
+    - Estar en la lista de evitados es O(1) por usar un set, si utilizamos una lista como mucho sera O(V) pero no nos afecta en la complejidad final.
     - Total: O(V+E)
 
 Analisis de complejidad espacial
     - para el listado_bfs se utiliza O(V)
     - para los conjuntos invitados y no_invitar se utiliza O(V) entre ambos
     - Total: O(V)
+
 """
 
 
