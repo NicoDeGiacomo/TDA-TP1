@@ -25,7 +25,7 @@ Se pide:
 
 """
 
-#RESOLUSION
+#RESOLUCIÓN
 """
 EJEMPLO ESTRUCTURA
                         ---------A-----
@@ -104,9 +104,6 @@ una solución óptima para el problema de determinar a quién invitar a la reuni
 
 # ALGORITMO:
 
-
-
-    
 
 def obtener_maximos_invitados_trabajo(organigrama_laboral):
     invitados = set()

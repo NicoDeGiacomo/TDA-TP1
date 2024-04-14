@@ -1,4 +1,5 @@
 from Grafo import Grafo
+import queue
 
 
 #ENUNCIADO *****************************************************************************************************
@@ -30,8 +31,12 @@ Identificamos que al ser un arbol jerarquico, tendremos una estructura de pirami
 las hojas del arbol antes que el nodo raiz. 
 Por lo tanto, se propone el siguiente algoritmo greedy:
     1- Realizar un recorrido BFS para obtener los nodos en orden de jerarquia.
-    2- Invertir la lista obtenida en el paso 1. Para que los nodos mas profundos esten al principio.
-    3- Recorrer la lista invertida y agregar a los nodos que no esten en la lista de excluidos. Si el nodo padre esta en la lista de excluidos, no se agrega.
+    2- Creo lista de invitados y lista de no invitar
+    3- Recorrer la lista desde el final al principio de forma invertida: 
+        Si el nodo no esta en lista de no invitar:
+            agrego al nodo a lista de invitados
+            agrego nodo padre a lista de no invitar
+    4-Devuelvo lista de invitados
     
 Otra forma seria realizar el recorrido bfs y no invertir la lista. Pero se considera que es mejor empezar por las hojas, ya que haciendo pruebas sobre el ejemplo 1, se obtiene una cantidad
 inferior de invitados.
@@ -72,15 +77,15 @@ inferior de invitados.
 
 
 Analisis de complejidad temporal
-    - del Recorrido BFS tenemos O(V+E)
-    - Como mejora no se invirtio la lista y se la recorrio de atras a adelante, el recorrido de la lista es O(V)
-    - Estar en la lista de evitados es O(1) por usar un set, si utilizamos una lista como mucho sera O(V) pero no nos afecta en la complejidad final.
-    - Total: O(V+E)
+    - del Recorrido BFS tenemos O(N)
+    - Como mejora no se invirtio la lista y se la recorrio de atras a adelante, el recorrido de la lista es O(N)
+    - Estar en la lista de evitados es O(1) por usar un set.
+    - Total: O(n)
 
 Analisis de complejidad espacial
-    - para el listado_bfs se utiliza O(V)
-    - para los conjuntos invitados y no_invitar se utiliza O(V) entre ambos
-    - Total: O(V)
+    - para el listado_bfs se utiliza O(N)
+    - para los conjuntos invitados y no_invitar se utiliza O(N) entre ambos
+    - Total: O(N)
 
 """
 
@@ -90,26 +95,38 @@ Analisis de complejidad espacial
 # ALGORITMO: *****************************************************************************************************
 def obtener_maximos_invitados_trabajo_bfs(organigrama_laboral,jefe) -> set:
     listado_bfs = []
-    armado_lista_preorder(jefe,None,listado_bfs,organigrama_laboral)
-    invitados = set()
+    diccionario_jefe = {}
+
+    armado_lista_bfs(jefe,listado_bfs,organigrama_laboral,diccionario_jefe)
+    
+    invitados = []
     no_invitar = set()
 
     for i in range(len(listado_bfs) - 1, -1, -1):
-        nodo,padre = listado_bfs[i][0],listado_bfs[i][1]
+        nodo = listado_bfs[i]
+        padre = diccionario_jefe[nodo]
         if nodo in no_invitar:
             continue
-        invitados.add(nodo)
+        invitados.append(nodo)
         no_invitar.add(padre)
     return invitados
     
 
 
-def armado_lista_preorder(nodo,padre,lista,grafo):
+def armado_lista_bfs(nodo,lista,grafo,diccionario):
+    #Recorre por niveles el grafo, y agrega a la lista los nodos por niveles, y guarda en el diccionario a sus padres
     if nodo == None:
         return
-    lista.append((nodo,padre))
-    for empleado in grafo.Adyacentes(nodo):
-        armado_lista_preorder(empleado,nodo,lista,grafo)
+    cola = queue.Queue()
+    cola.put(nodo)
+    diccionario[nodo] = None
+    while not cola.empty():
+        nodo = cola.get()
+        lista.append(nodo)
+        for empleado in grafo.Adyacentes(nodo):
+            diccionario[empleado] = nodo
+            cola.put(empleado)
+    
 
 def armar_arbol_ejemplo1():
     """
